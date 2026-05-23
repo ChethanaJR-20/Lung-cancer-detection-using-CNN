@@ -8,7 +8,7 @@ import os
 app = Flask(__name__)
 
 # Load the trained CNN model
-cnn_model = load_model('/Users/akash/MCA Academics/Minor Project/Lung Cancer Detection Final/model.h5')  # Update with your model path
+cnn_model = load_model('./model.h5')  # Update with your model path if needed
 
 # Define function to preprocess image
 def preprocess_image(file_path):
@@ -41,7 +41,13 @@ def predict():
 
         # Make prediction
         result = cnn_model.predict(processed_img)
-        prediction = 'Normal' if result[0][0] == 1 else 'Cancer'
+        
+        # Check output probabilities with a 0.5 decision threshold
+        # (Assuming your model outputs 1 for Normal and 0 for Cancer)
+        if result[0][0] >= 0.5:
+            prediction = 'Normal'
+        else:
+            prediction = 'Cancer'
 
         # Remove the temporary file
         os.remove(file_path)
@@ -49,6 +55,9 @@ def predict():
         return jsonify({'prediction': prediction})
 
     except Exception as e:
+        # Ensure cleanup even if prediction throws an error
+        if os.path.exists(file_path):
+            os.remove(file_path)
         return jsonify({'error': str(e)})
 
 if __name__ == '__main__':

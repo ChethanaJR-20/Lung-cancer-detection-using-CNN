@@ -60,8 +60,8 @@
         }
         
         .logo img {
-            width: 70px; /* Adjust as needed */
-            height: 70px; /* Adjust as needed */
+            width: 70px; 
+            height: 70px; 
         }
 
         .home-page {
@@ -93,7 +93,6 @@
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(220, 215, 215, 0.1);
             color: #e8dfdf;
-            
         }
 
         .container::before {
@@ -253,7 +252,8 @@
 
                 People who smoke have the greatest risk of lung cancer. <br>The risk of lung cancer increases with the length of
                 time and number of cigarettes smoked.<br> Quitting smoking, even after smoking for many years, significantly lowers
-                the chances of developing lung cancer.<br> <p style="text-align: center,font-weight: bold">This is a Project which uses a Machine Learning Model to Predict the <br>presence of Lung cancer by using CT Scan images of Lungs.</p>
+                the chances of developing lung cancer.<br> 
+                <p style="text-align: center; font-weight: bold;">This is a Project which uses a Machine Learning Model to Predict the <br>presence of Lung cancer by using CT Scan images of Lungs.</p>
             </p>
         </div>
     </div>
@@ -274,9 +274,9 @@
 
     <div class="contact-page" id="contactPage">
         <h2>Contact Us</h2>
-        <p>Email: akashgupta0919@gmail.com</p>
+        <p>Email: chethanajr@gmail.com</p>
         <p>Phone: +91 8516852232</p>
-        <p style="text-align:center">Copyright © 2024 Lungs Cancer Detection by Akash</p>
+        <p style="text-align:center">Copyright © 2024 Lungs Cancer Detection by Chethana</p>
     </div>
 
     <script>
@@ -284,20 +284,27 @@
             var fileInput = document.getElementById('fileInput');
             fileInput.click();
 
-            fileInput.addEventListener('change', function () {
+            // Use onchange directly to ensure event fires properly every time
+            fileInput.onchange = function () {
                 var file = fileInput.files[0];
                 if (file) {
                     var reader = new FileReader();
                     reader.readAsDataURL(file);
                     reader.onload = function (e) {
                         var image = document.getElementById('uploadedImage');
+                        
+                        // Wait for the DOM element to load the base64 data completely
+                        image.onload = function() {
+                            image.parentElement.style.display = 'block';
+                            resizeImage(image);
+                            predictImage(file);
+                            image.onload = null; // Unbind to stop loops when data changes
+                        };
+                        
                         image.src = e.target.result;
-                        image.parentElement.style.display = 'block';
-                        resizeImage(image);
-                        predictImage(file);
                     };
                 }
-            });
+            };
         }
 
         function resizeImage(image) {
@@ -305,12 +312,14 @@
             var ctx = canvas.getContext('2d');
             canvas.width = 400; // Fixed width
             canvas.height = 300; // Fixed height
+            
             ctx.drawImage(image, 0, 0, 400, 300);
-            var resizedDataUrl = canvas.toDataURL('image/jpeg', 10); // Resize to JPEGwith quality 0.5 (adjust as needed)
+            
+            // Changed quality from 10 to 0.7 (value must range from 0.0 to 1.0)
+            var resizedDataUrl = canvas.toDataURL('image/jpeg', 0.7); 
             image.src = resizedDataUrl;
         }
         
-
         function predictImage(file) {
             var formData = new FormData();
             formData.append('file', file);

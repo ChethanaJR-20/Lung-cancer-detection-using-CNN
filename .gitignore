@@ -1,0 +1,6 @@
+venv/
+.history/
+.vscode/
+__pycache__/
+*.pyc
+*.zip
